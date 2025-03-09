@@ -22,18 +22,20 @@ export default function FileStats({ stats, label }: FileStatsProps) {
           <h3 className="text-sm font-semibold text-foreground">{label} Statistics</h3>
         </div>
       </div>
-      <div className="card-body">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="card-body py-3">
+        <div className="flex flex-wrap items-center gap-6">
           <StatItem 
             icon={<ClockIcon size={16} className="text-primary" />}
             label="Reading Time"
             value={`${stats.readingTime} min`}
           />
+          <div className="h-4 w-px bg-border/50 hidden sm:block"></div>
           <StatItem 
             icon={<HashIcon size={16} className="text-primary" />}
             label="Characters"
             value={stats.totalChars.toLocaleString()}
           />
+          <div className="h-4 w-px bg-border/50 hidden sm:block"></div>
           <StatItem 
             icon={<BookOpenIcon size={16} className="text-primary" />}
             label="Words"
@@ -53,13 +55,13 @@ interface StatItemProps {
 
 function StatItem({ icon, label, value }: StatItemProps) {
   return (
-    <div className="flex items-center gap-3 bg-background/30 p-3 rounded border border-border/50">
-      <div className="bg-primary/10 p-2 rounded-full">
+    <div className="flex items-center gap-2">
+      <div className="text-primary">
         {icon}
       </div>
-      <div>
-        <p className="text-xs text-foreground/70">{label}</p>
-        <p className="text-sm font-medium text-foreground">{value}</p>
+      <div className="flex items-baseline gap-1.5">
+        <span className="text-xs font-medium text-foreground/70">{label}:</span>
+        <span className="text-sm font-semibold text-foreground">{value}</span>
       </div>
     </div>
   );

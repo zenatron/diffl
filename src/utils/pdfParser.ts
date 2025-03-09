@@ -1,43 +1,21 @@
 'use client';
 
-import * as pdfjsLib from 'pdfjs-dist';
-
-// Set the worker source
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
-
 /**
- * Parse a PDF file and extract its text content
+ * A simple placeholder for PDF parsing that informs users of limitations
  */
 export async function parsePdf(file: File): Promise<string> {
-  try {
-    // Read the file as ArrayBuffer
-    const arrayBuffer = await file.arrayBuffer();
-    
-    // Load the PDF document
-    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-    const pdf = await loadingTask.promise;
-    
-    // Get the total number of pages
-    const numPages = pdf.numPages;
-    
-    // Extract text from each page
-    let fullText = '';
-    
-    for (let i = 1; i <= numPages; i++) {
-      const page = await pdf.getPage(i);
-      const textContent = await page.getTextContent();
-      
-      // Concatenate the text items
-      const pageText = textContent.items
-        .map((item: any) => item.str)
-        .join(' ');
-      
-      fullText += pageText + '\n\n';
-    }
-    
-    return fullText;
-  } catch (error) {
-    console.error('Error parsing PDF:', error);
-    throw new Error('Failed to parse PDF file');
-  }
+  return new Promise((resolve) => {
+    // Return a clear message about PDF limitations
+    const fileName = file.name;
+    resolve(
+      `[PDF SUPPORT LIMITED]\n\n` +
+      `The file "${fileName}" is a PDF document.\n\n` +
+      `PDF comparison is currently limited in this application. ` +
+      `For best results, please consider:\n` +
+      `- Converting your PDF to text before uploading\n` +
+      `- Using plain text or markdown files instead\n` +
+      `- Copying text directly from your PDF into the text area\n\n` +
+      `If you need to compare PDFs specifically, you may want to use a dedicated PDF comparison tool.`
+    );
+  });
 } 

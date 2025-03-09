@@ -34,7 +34,7 @@ export default function FileInput({ id, label, onContentChange }: FileInputProps
       let fileContent = '';
       
       if (file.type === 'application/pdf') {
-        // For PDF files, use the PDF parser
+        // For PDF files, use the simplified PDF parser that returns a message
         fileContent = await parsePdf(file);
       } else {
         // For text and markdown files
@@ -43,9 +43,12 @@ export default function FileInput({ id, label, onContentChange }: FileInputProps
 
       setContent(fileContent);
       onContentChange(fileContent);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error reading file:', error);
-      alert('Error reading file. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Please try again.';
+      alert(`Error reading file: ${errorMessage}`);
+      // Clear the file name since processing failed
+      setFileName('');
     } finally {
       setIsUploading(false);
     }
