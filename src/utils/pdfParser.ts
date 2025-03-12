@@ -1,9 +1,10 @@
-'use client';
+'use server';
 
-/**
- * A simple placeholder for PDF parsing that informs users of limitations
- */
-export async function parsePdf(file: File): Promise<string> {
+import pdf from 'pdf-parse/lib/pdf-parse.js';
+import { PDFParseResult } from 'pdf-parse';
+
+// Placeholder message
+export async function pdfParserMessage(file: File): Promise<string> {
   return new Promise((resolve) => {
     // Return a clear message about PDF limitations
     const fileName = file.name;
@@ -18,4 +19,15 @@ export async function parsePdf(file: File): Promise<string> {
       `If you need to compare PDFs specifically, you may want to use a dedicated PDF comparison tool.`
     );
   });
-} 
+}
+
+// Parse PDF and return text
+export async function parsePdf(file: File): Promise<string> {
+  const dataBuffer = await Buffer.from(await file.arrayBuffer());
+  return pdf(dataBuffer).then(function(data: PDFParseResult) {
+    return data.text;
+  })
+  .catch(function(error: Error) {
+    return error.message;
+  })
+}

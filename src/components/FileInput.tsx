@@ -152,7 +152,7 @@ export default function FileInput({ id, label, onContentChange }: FileInputProps
             ref={fileInputRef}
             type="file"
             id={`${id}-file`}
-            accept=".txt,.md,.pdf"
+            accept=".txt,.md,.mdx,.pdf"
             onChange={handleInputChange}
             className="hidden"
           />

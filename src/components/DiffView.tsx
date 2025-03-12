@@ -232,13 +232,13 @@ function ListStyleDiff({ diffResult }: { diffResult: DiffResult }) {
             >
               <div className="flex items-start">
                 <div className="flex items-center justify-center w-6 h-6 rounded-full mr-2" 
-                  style={{ backgroundColor: change.type === 'added' ? '#059669' : '#dc2626' }}>
+                  style={{ backgroundColor: change.type === 'added' ? '#34d399' : '#f87171' }}>
                   {change.type === 'added' ? (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#34d399" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#059669" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M12 5v14M5 12h14" />
                     </svg>
                   ) : (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#f87171" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#dc2626" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M5 12h14" />
                     </svg>
                   )}

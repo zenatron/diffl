@@ -34,7 +34,7 @@ export function calculateFileStats(text: string): FileStats {
   return {
     readingTime,
     totalChars,
-    wordCount,
+    wordCount
   };
 }
 
@@ -42,9 +42,6 @@ export function calculateFileStats(text: string): FileStats {
  * Compare two text files and return the differences
  */
 export function compareFiles(oldText: string, newText: string): DiffResult {
-  // Split the text into lines
-  const oldLines = oldText.split('\n');
-  const newLines = newText.split('\n');
   
   // Get the diff
   const diffResult = diffLib.diffLines(oldText, newText);
