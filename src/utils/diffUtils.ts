@@ -1,5 +1,4 @@
-import * as diffLib from 'diff';
-
+import * as Diff from 'diff';
 export interface DiffLine {
   value: string;
   added?: boolean;
@@ -41,25 +40,31 @@ export function calculateFileStats(text: string): FileStats {
 /**
  * Compare two text files and return the differences
  */
-export function compareFiles(oldText: string, newText: string): DiffResult {
+export function compareFiles(oldText: string, newText: string, options: {
+  ignoreWhitespace: boolean;
+}): DiffResult {
   
   // Get the diff
-  const diffResult = diffLib.diffLines(oldText, newText);
-  
+  const diff = Diff.diffChars(oldText, newText)
+  const fragment = document.createDocumentFragment();
+
   // Count changes
   let linesChanged = 0;
   let charsChanged = 0;
   
-  diffResult.forEach(part => {
-    if (part.added || part.removed) {
-      const lines = part.value.split('\n').length - (part.value.endsWith('\n') ? 1 : 0);
-      linesChanged += lines;
-      charsChanged += part.value.length;
-    }
+  diff.forEach((part) => {
+    const color = part.added ? 'bg-green-500' : part.removed ? 'bg-red-500' : 'bg-gray-500';
+    const lines = part.value.split('\n').length - (part.value.endsWith('\n') ? 1 : 0);
+    linesChanged += lines;
+    charsChanged += part.value.length;
+    const span = document.createElement('span');
+    span.className = color;
+    span.appendChild(document.createTextNode(part.value));
+    fragment.appendChild(span);
   });
-  
+
   return {
-    lines: diffResult.map(part => ({
+    lines: diff.map(part => ({
       value: part.value,
       added: part.added,
       removed: part.removed,
@@ -79,9 +84,9 @@ export function getChangesList(diffResult: DiffResult): string[] {
   
   diffResult.lines.forEach(line => {
     if (line.added) {
-      changes.push(`+ ${line.value.trim()}`);
+      changes.push(line.value.trim());
     } else if (line.removed) {
-      changes.push(`- ${line.value.trim()}`);
+      changes.push(line.value.trim());
     }
   });
   

@@ -8,9 +8,11 @@ interface DiffViewProps {
   diffResult: DiffResult | null;
   viewMode: 'git' | 'list';
   onViewModeChange: (mode: 'git' | 'list') => void;
+  ignoreWhitespace: boolean;
+  onIgnoreWhitespaceChange: (ignoreWhitespace: boolean) => void;
 }
 
-export default function DiffView({ diffResult, viewMode, onViewModeChange }: DiffViewProps) {
+export default function DiffView({ diffResult, viewMode, ignoreWhitespace, onViewModeChange, onIgnoreWhitespaceChange }: DiffViewProps) {
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = (text: string) => {
@@ -75,6 +77,18 @@ export default function DiffView({ diffResult, viewMode, onViewModeChange }: Dif
         </div>
         <div className="flex items-center gap-2">
           <div className="flex rounded-lg overflow-hidden border border-border">
+            <button
+              type="button"
+              onClick={() => onIgnoreWhitespaceChange(!ignoreWhitespace)}
+              className={`flex items-center gap-1 px-3 py-1.5 text-xs transition-colors ${
+                ignoreWhitespace
+                  ? 'bg-primary text-white'
+                  : 'bg-card text-foreground/70 hover:bg-border'
+              }`}
+            >
+              <CheckIcon size={14} />
+              Ignore Whitespace
+            </button>
             <button
               type="button"
               onClick={() => onViewModeChange('git')}

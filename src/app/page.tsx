@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import FileInput from '@/components/FileInput';
 import DiffView from '@/components/DiffView';
 import FileStats from '@/components/FileStats';
-import Footer from '@/components/Footer';
-import Header from '@/components/Header';
 import { compareFiles, calculateFileStats, DiffResult, FileStats as FileStatsType } from '@/utils/diffUtils';
 
 export default function Home() {
@@ -15,16 +13,16 @@ export default function Home() {
   const [leftStats, setLeftStats] = useState<FileStatsType | null>(null);
   const [rightStats, setRightStats] = useState<FileStatsType | null>(null);
   const [viewMode, setViewMode] = useState<'git' | 'list'>('git');
-
+  const [ignoreWhitespace, setIgnoreWhitespace] = useState(false);
   // Update diff when content changes
   useEffect(() => {
     if (leftContent && rightContent) {
-      const result = compareFiles(leftContent, rightContent);
+      const result = compareFiles(leftContent, rightContent, { ignoreWhitespace });
       setDiffResult(result);
     } else {
       setDiffResult(null);
     }
-  }, [leftContent, rightContent]);
+  }, [leftContent, rightContent, ignoreWhitespace]);
 
   // Update stats when content changes
   useEffect(() => {
@@ -43,24 +41,23 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Header />
       <main className="container mx-auto px-4 py-8 flex-grow">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           <div>
             <FileInput
               id="left-input"
-              label="Original File"
+              label="File A"
               onContentChange={setLeftContent}
             />
-            {leftStats && <div className="mt-4"><FileStats stats={leftStats} label="Original File" /></div>}
+            {leftStats && <div className="mt-4"><FileStats stats={leftStats} label="File A" /></div>}
           </div>
           <div>
             <FileInput
               id="right-input"
-              label="Modified File"
+              label="File B"
               onContentChange={setRightContent}
             />
-            {rightStats && <div className="mt-4"><FileStats stats={rightStats} label="Modified File" /></div>}
+            {rightStats && <div className="mt-4"><FileStats stats={rightStats} label="File B" /></div>}
           </div>
         </div>
 
@@ -68,11 +65,12 @@ export default function Home() {
           <DiffView
             diffResult={diffResult}
             viewMode={viewMode}
+            ignoreWhitespace={ignoreWhitespace}
             onViewModeChange={setViewMode}
+            onIgnoreWhitespaceChange={setIgnoreWhitespace}
           />
         </div>
       </main>
-      <Footer />
     </div>
   );
 }
