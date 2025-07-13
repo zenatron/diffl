@@ -9,11 +9,9 @@ import {
   CopyIcon,
   CheckIcon,
   HelpCircleIcon,
-  XIcon,
   ZapIcon,
   EyeIcon,
-  HashIcon,
-  TypeIcon
+  HashIcon
 } from 'lucide-react';
 import * as Diff from 'diff';
 
@@ -23,14 +21,14 @@ interface DiffViewProps {
   onViewModeChange: (mode: 'git' | 'list') => void;
   ignoreWhitespace: boolean;
   onIgnoreWhitespaceChange: (ignoreWhitespace: boolean) => void;
+  onShowHelp: () => void;
 }
 
-export default function DiffView({ diffResult, viewMode, ignoreWhitespace, onViewModeChange, onIgnoreWhitespaceChange }: DiffViewProps) {
+export default function DiffView({ diffResult, viewMode, ignoreWhitespace, onViewModeChange, onIgnoreWhitespaceChange, onShowHelp }: DiffViewProps) {
   const [copied, setCopied] = useState(false);
   const [showLineNumbers, setShowLineNumbers] = useState(true);
   const [fontSize, setFontSize] = useState(14);
   const [showInlineDiffs, setShowInlineDiffs] = useState(true);
-  const [showHelpModal, setShowHelpModal] = useState(false);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -105,15 +103,15 @@ export default function DiffView({ diffResult, viewMode, ignoreWhitespace, onVie
           </div>
         </div>
         <div className="flex items-center gap-3">
-          {/* View Mode Controls */}
-          <div className="flex items-center gap-2 p-1.5 bg-background rounded-xl border-2 border-border shadow-sm">
+          {/* Modern View Mode Controls */}
+          <div className="glass-modern flex items-center gap-1 p-2 rounded-2xl border border-border/50 shadow-md">
             <button
               type="button"
               onClick={() => onViewModeChange('git')}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 border-2 ${
+              className={`btn btn-sm magnetic ${
                 viewMode === 'git'
-                  ? 'bg-primary border-primary text-white shadow-lg transform scale-105 ring-2 ring-primary/30'
-                  : 'bg-card border-border text-foreground hover:border-primary/50 hover:bg-primary/5 hover:text-primary hover:shadow-md'
+                  ? 'btn-primary'
+                  : 'btn-ghost'
               }`}
               title="Git-style unified diff view"
             >
@@ -123,10 +121,10 @@ export default function DiffView({ diffResult, viewMode, ignoreWhitespace, onVie
             <button
               type="button"
               onClick={() => onViewModeChange('list')}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 border-2 ${
+              className={`btn btn-sm magnetic ${
                 viewMode === 'list'
-                  ? 'bg-primary border-primary text-white shadow-lg transform scale-105 ring-2 ring-primary/30'
-                  : 'bg-card border-border text-foreground hover:border-primary/50 hover:bg-primary/5 hover:text-primary hover:shadow-md'
+                  ? 'btn-primary'
+                  : 'btn-ghost'
               }`}
               title="List view showing only changes"
             >
@@ -135,15 +133,15 @@ export default function DiffView({ diffResult, viewMode, ignoreWhitespace, onVie
             </button>
           </div>
 
-          {/* Display Options */}
-          <div className="flex items-center gap-2 p-1.5 bg-background rounded-xl border-2 border-border shadow-sm">
+          {/* Modern Display Options */}
+          <div className="glass-modern flex items-center gap-1 p-2 rounded-2xl border border-border/50 shadow-md">
             <button
               type="button"
               onClick={() => setShowLineNumbers(!showLineNumbers)}
-              className={`flex items-center gap-2 px-3 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 border-2 ${
+              className={`btn btn-sm magnetic ${
                 showLineNumbers
-                  ? 'bg-success border-success text-white shadow-lg ring-2 ring-success/30'
-                  : 'bg-card border-border text-foreground hover:border-success/50 hover:bg-success/5 hover:text-success hover:shadow-md'
+                  ? 'btn-success'
+                  : 'btn-ghost'
               }`}
               title="Toggle line numbers"
             >
@@ -153,10 +151,10 @@ export default function DiffView({ diffResult, viewMode, ignoreWhitespace, onVie
             <button
               type="button"
               onClick={() => setShowInlineDiffs(!showInlineDiffs)}
-              className={`flex items-center gap-2 px-3 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 border-2 ${
+              className={`btn btn-sm magnetic ${
                 showInlineDiffs
-                  ? 'bg-warning border-warning text-white shadow-lg ring-2 ring-warning/30'
-                  : 'bg-card border-border text-foreground hover:border-warning/50 hover:bg-warning/5 hover:text-warning hover:shadow-md'
+                  ? 'btn-primary'
+                  : 'btn-ghost'
               }`}
               title="Show character-level differences within lines"
             >
@@ -166,10 +164,10 @@ export default function DiffView({ diffResult, viewMode, ignoreWhitespace, onVie
             <button
               type="button"
               onClick={() => onIgnoreWhitespaceChange(!ignoreWhitespace)}
-              className={`flex items-center gap-2 px-3 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 border-2 ${
+              className={`btn btn-sm magnetic ${
                 ignoreWhitespace
-                  ? 'bg-info border-info text-white shadow-lg ring-2 ring-info/30'
-                  : 'bg-card border-border text-foreground hover:border-info/50 hover:bg-info/5 hover:text-info hover:shadow-md'
+                  ? 'btn-info'
+                  : 'btn-ghost'
               }`}
               title="Ignore whitespace differences"
             >
@@ -178,24 +176,24 @@ export default function DiffView({ diffResult, viewMode, ignoreWhitespace, onVie
             </button>
           </div>
 
-          {/* Font Size Controls */}
-          <div className="flex items-center gap-1 p-1.5 bg-background rounded-xl border-2 border-border shadow-sm">
+          {/* Modern Font Size Controls */}
+          <div className="glass-modern flex items-center gap-1 p-2 rounded-2xl border border-border/50 shadow-md">
             <button
               type="button"
               onClick={() => adjustFontSize(-1)}
-              className="flex items-center justify-center w-10 h-10 text-sm font-bold bg-card border-2 border-border text-foreground hover:border-muted hover:bg-muted/10 hover:text-muted-dark rounded-lg transition-all duration-200 hover:shadow-md"
+              className="btn btn-sm btn-icon btn-ghost magnetic"
               title="Decrease font size"
               disabled={fontSize <= 10}
             >
               A-
             </button>
-            <div className="flex items-center justify-center min-w-[3.5rem] px-3 py-2 text-sm font-bold text-foreground bg-muted/10 rounded-lg border-2 border-muted/30">
+            <div className="flex items-center justify-center min-w-[3.5rem] px-3 py-2 text-sm font-bold text-foreground bg-gradient-to-r from-muted/10 to-muted/5 rounded-lg border border-muted/20">
               {fontSize}px
             </div>
             <button
               type="button"
               onClick={() => adjustFontSize(1)}
-              className="flex items-center justify-center w-10 h-10 text-sm font-bold bg-card border-2 border-border text-foreground hover:border-muted hover:bg-muted/10 hover:text-muted-dark rounded-lg transition-all duration-200 hover:shadow-md"
+              className="btn btn-sm btn-icon btn-ghost magnetic"
               title="Increase font size"
               disabled={fontSize >= 20}
             >
@@ -206,19 +204,19 @@ export default function DiffView({ diffResult, viewMode, ignoreWhitespace, onVie
           {/* Action Buttons */}
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setShowHelpModal(true)}
-              className="flex items-center justify-center w-12 h-12 bg-card border-2 border-border text-foreground hover:border-primary hover:bg-primary hover:text-white rounded-xl transition-all duration-200 hover:shadow-lg hover:scale-105"
+              onClick={onShowHelp}
+              className="glass-modern magnetic flex items-center justify-center w-14 h-14 border-2 border-primary/20 text-foreground hover:border-primary hover:bg-primary hover:text-white rounded-2xl transition-all duration-300 hover:shadow-lg hover:shadow-primary/20"
               title="Help & Instructions"
             >
-              <HelpCircleIcon size={20} />
+              <HelpCircleIcon size={22} />
             </button>
 
             <button
               onClick={() => copyToClipboard(getDiffContent())}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold rounded-xl border-2 transition-all duration-200 hover:shadow-lg hover:scale-105 ${
+              className={`btn magnetic ${
                 copied
-                  ? 'bg-success text-white border-success ring-2 ring-success/30'
-                  : 'bg-card text-foreground border-border hover:bg-primary hover:text-white hover:border-primary hover:ring-2 hover:ring-primary/30'
+                  ? 'btn-success'
+                  : 'btn-secondary'
               }`}
               title="Copy diff to clipboard"
             >
@@ -246,200 +244,7 @@ export default function DiffView({ diffResult, viewMode, ignoreWhitespace, onVie
         )}
       </div>
 
-      {/* Help Modal */}
-      {showHelpModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in-50 duration-300">
-          <div className="relative w-full max-w-4xl max-h-[90vh] bg-card rounded-2xl border border-border shadow-strong overflow-hidden animate-in scale-in-95 duration-300">
-            {/* Header */}
-            <div className="relative bg-gradient-primary p-6 text-white">
-              <div className="absolute inset-0 bg-black/10"></div>
-              <div className="relative flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-xl backdrop-blur-sm">
-                    <HelpCircleIcon size={24} />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold">Diffl Help & Guide</h2>
-                    <p className="text-white/80 text-sm">Master the art of file comparison</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowHelpModal(false)}
-                  className="flex items-center justify-center w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl transition-colors duration-200"
-                >
-                  <XIcon size={20} />
-                </button>
-              </div>
-            </div>
 
-            {/* Content */}
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Getting Started */}
-                <div className="space-y-6">
-                  <div className="bg-primary/5 rounded-xl p-6 border border-primary/20">
-                    <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                      <ZapIcon size={20} className="text-primary" />
-                      Getting Started
-                    </h3>
-                    <div className="space-y-3 text-sm text-foreground/80">
-                      <div className="flex items-start gap-3">
-                        <span className="flex items-center justify-center w-6 h-6 bg-primary text-white rounded-full text-xs font-bold">1</span>
-                        <p>Upload files or paste content into both input areas (File A and File B)</p>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <span className="flex items-center justify-center w-6 h-6 bg-primary text-white rounded-full text-xs font-bold">2</span>
-                        <p>Diffl automatically detects and highlights differences between your files</p>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <span className="flex items-center justify-center w-6 h-6 bg-primary text-white rounded-full text-xs font-bold">3</span>
-                        <p>Use the view options to customize how differences are displayed</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* View Modes */}
-                  <div className="bg-success/5 rounded-xl p-6 border border-success/20">
-                    <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                      <EyeIcon size={20} className="text-success" />
-                      View Modes
-                    </h3>
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-3">
-                        <div className="flex items-center gap-1 px-2 py-1 bg-primary text-white rounded-lg text-xs">
-                          <GitBranchIcon size={12} />
-                          Git Style
-                        </div>
-                        <p className="text-sm text-foreground/80">Shows a unified diff view similar to Git, with all changes in context</p>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="flex items-center gap-1 px-2 py-1 bg-primary text-white rounded-lg text-xs">
-                          <ListIcon size={12} />
-                          List View
-                        </div>
-                        <p className="text-sm text-foreground/80">Displays only the changed lines in a clean, organized list format</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* File Support */}
-                  <div className="bg-info/5 rounded-xl p-6 border border-info/20">
-                    <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                      <TypeIcon size={20} className="text-info" />
-                      Supported Files
-                    </h3>
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-success rounded-full"></span>
-                        <span>Text files (.txt)</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-success rounded-full"></span>
-                        <span>Markdown (.md, .mdx)</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-success rounded-full"></span>
-                        <span>PDF documents</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 bg-success rounded-full"></span>
-                        <span>Plain text content</span>
-                      </div>
-                    </div>
-                    <p className="text-xs text-foreground/60 mt-3">Maximum file size: 10MB</p>
-                  </div>
-                </div>
-
-                {/* Display Options */}
-                <div className="space-y-6">
-                  <div className="bg-warning/5 rounded-xl p-6 border border-warning/20">
-                    <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                      <HashIcon size={20} className="text-warning" />
-                      Display Options
-                    </h3>
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-3">
-                        <div className="flex items-center gap-1 px-2 py-1 bg-success text-white rounded-lg text-xs">
-                          <HashIcon size={12} />
-                          Lines
-                        </div>
-                        <p className="text-sm text-foreground/80">Toggle line numbers on/off for easier navigation</p>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="flex items-center gap-1 px-2 py-1 bg-warning text-white rounded-lg text-xs">
-                          <ZapIcon size={12} />
-                          Inline
-                        </div>
-                        <p className="text-sm text-foreground/80">Show character-level differences within modified lines</p>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="flex items-center gap-1 px-2 py-1 bg-info text-white rounded-lg text-xs">
-                          <EyeIcon size={12} />
-                          No WS
-                        </div>
-                        <p className="text-sm text-foreground/80">Ignore whitespace differences for cleaner comparisons</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Color Legend */}
-                  <div className="bg-muted-subtle rounded-xl p-6 border border-border">
-                    <h3 className="text-lg font-semibold text-foreground mb-4">Color Legend</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 bg-success rounded-full"></div>
-                        <span className="text-sm">Added content</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 bg-error rounded-full"></div>
-                        <span className="text-sm">Removed content</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 bg-warning rounded-full"></div>
-                        <span className="text-sm">Modified content (inline diff)</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="w-4 h-4 bg-muted rounded-full"></div>
-                        <span className="text-sm">Unchanged content</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Pro Tips */}
-                  <div className="bg-gradient-to-br from-primary/5 to-success/5 rounded-xl p-6 border border-primary/20">
-                    <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                      <ZapIcon size={20} className="text-primary" />
-                      Pro Tips
-                    </h3>
-                    <div className="space-y-2 text-sm text-foreground/80">
-                      <p>• Use drag & drop to quickly upload files</p>
-                      <p>• Adjust font size for better readability</p>
-                      <p>• Copy diff results to share with others</p>
-                      <p>• Enable inline diffs for precise change detection</p>
-                      <p>• Switch between light and dark themes</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="border-t border-border p-4 bg-muted-subtle">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-foreground/60">
-                  Need more help? Check out our documentation or contact support.
-                </p>
-                <button
-                  onClick={() => setShowHelpModal(false)}
-                  className="btn btn-sm btn-primary"
-                >
-                  Got it!
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
