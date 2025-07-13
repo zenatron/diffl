@@ -27,7 +27,7 @@ export default function ThemeSwitch() {
   if (!mounted) {
     return (
       <button
-        className="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors duration-200"
+        className="flex items-center justify-center w-10 h-10 rounded-lg bg-card border border-border hover:bg-muted-subtle transition-all duration-200"
         aria-label="Theme settings"
       >
         <span className="opacity-0">Loading...</span>
@@ -41,7 +41,7 @@ export default function ThemeSwitch() {
   return (
     <button
       onClick={toggleTheme}
-      className="flex items-center justify-center rounded-lg text-gray-700 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200"
+      className="flex items-center justify-center w-10 h-10 rounded-lg bg-card border border-border text-foreground hover:bg-primary hover:text-white hover:border-primary transition-all duration-200 hover:scale-105 hover:shadow-lg"
       aria-label="Toggle theme"
       title={`Current theme: ${currentTheme.id}`}
     >

@@ -13,8 +13,8 @@ const atkinsonHyperlegible = Atkinson_Hyperlegible({
 });
 
 export const metadata: Metadata = {
-  title: "viddl - Video Downloader",
-  description: "video downloader",
+  title: "diffl - File Comparison Tool",
+  description: "A powerful web-based file comparison tool for comparing text, markdown, and PDF files with detailed diff visualization and statistics.",
 };
 
 export default function RootLayout({
