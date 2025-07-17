@@ -138,7 +138,7 @@ function calculateSimilarity(oldText: string, newText: string, ignoreWhitespace:
 /**
  * Calculate Levenshtein distance between two strings
  */
-function levenshteinDistance(str1: string, str2: string): number {
+export function levenshteinDistance(str1: string, str2: string): number {
   const matrix = Array(str2.length + 1).fill(null).map(() => Array(str1.length + 1).fill(null));
 
   for (let i = 0; i <= str1.length; i++) matrix[0][i] = i;
