@@ -9,14 +9,15 @@ import {
   CopyIcon,
   CheckIcon,
   ZapIcon,
-  HashIcon
+  HashIcon,
+  SplitIcon
 } from 'lucide-react';
 import * as Diff from 'diff';
 
 interface DiffViewProps {
   diffResult: DiffResult | null;
-  viewMode: 'git' | 'list';
-  onViewModeChange: (mode: 'git' | 'list') => void;
+  viewMode: 'git' | 'list' | 'side-by-side';
+  onViewModeChange: (mode: 'git' | 'list' | 'side-by-side') => void;
 }
 
 export default function DiffView({ diffResult, viewMode, onViewModeChange }: DiffViewProps) {
@@ -111,7 +112,20 @@ export default function DiffView({ diffResult, viewMode, onViewModeChange }: Dif
               title="Git-style unified diff view"
             >
               <GitBranchIcon size={16} />
-              <span>Git Style</span>
+              <span>Unified</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onViewModeChange('side-by-side')}
+              className={`btn btn-sm magnetic ${
+                viewMode === 'side-by-side'
+                  ? 'btn-primary'
+                  : 'btn-ghost'
+              }`}
+              title="Side-by-side diff view"
+            >
+              <SplitIcon size={16} />
+              <span>Split</span>
             </button>
             <button
               type="button"
@@ -124,7 +138,7 @@ export default function DiffView({ diffResult, viewMode, onViewModeChange }: Dif
               title="List view showing only changes"
             >
               <ListIcon size={16} />
-              <span>List View</span>
+              <span>List</span>
             </button>
           </div>
 
@@ -205,6 +219,13 @@ export default function DiffView({ diffResult, viewMode, onViewModeChange }: Dif
       <div className="overflow-hidden">
         {viewMode === 'git' ? (
           <GitStyleDiff
+            diffResult={diffResult}
+            showLineNumbers={showLineNumbers}
+            fontSize={fontSize}
+            showInlineDiffs={showInlineDiffs}
+          />
+        ) : viewMode === 'side-by-side' ? (
+          <SideBySideDiff
             diffResult={diffResult}
             showLineNumbers={showLineNumbers}
             fontSize={fontSize}
@@ -646,6 +667,161 @@ function ListStyleDiff({ diffResult, fontSize, showInlineDiffs }: ListStyleDiffP
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// Side-by-side diff component with synchronized scrolling
+interface SideBySideDiffProps {
+  diffResult: DiffResult;
+  showLineNumbers: boolean;
+  fontSize: number;
+  showInlineDiffs: boolean;
+}
+
+function SideBySideDiff({ diffResult, showLineNumbers, fontSize, showInlineDiffs }: SideBySideDiffProps) {
+  const leftPanelRef = React.useRef<HTMLDivElement>(null);
+  const rightPanelRef = React.useRef<HTMLDivElement>(null);
+
+  // Synchronized scrolling
+  const handleScroll = (source: 'left' | 'right') => (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    const other = source === 'left' ? rightPanelRef.current : leftPanelRef.current;
+
+    if (other && other !== target) {
+      other.scrollTop = target.scrollTop;
+      other.scrollLeft = target.scrollLeft;
+    }
+  };
+
+  // Process diff result into side-by-side format
+  const processedLines = React.useMemo(() => {
+    const leftLines: Array<{content: string, lineNumber?: number, type: 'unchanged' | 'removed' | 'modified', oldContent?: string}> = [];
+    const rightLines: Array<{content: string, lineNumber?: number, type: 'unchanged' | 'added' | 'modified', newContent?: string}> = [];
+
+    let leftLineNumber = 1;
+    let rightLineNumber = 1;
+
+    diffResult.lines.forEach(line => {
+      const lines = line.value.split('\n').filter((l, i, arr) => i < arr.length - 1 || l.length > 0);
+
+      if (line.added) {
+        // Add empty lines to left, actual lines to right
+        lines.forEach(content => {
+          leftLines.push({ content: '', type: 'unchanged' });
+          rightLines.push({
+            content,
+            lineNumber: rightLineNumber++,
+            type: 'added'
+          });
+        });
+      } else if (line.removed) {
+        // Add actual lines to left, empty lines to right
+        lines.forEach(content => {
+          leftLines.push({
+            content,
+            lineNumber: leftLineNumber++,
+            type: 'removed'
+          });
+          rightLines.push({ content: '', type: 'unchanged' });
+        });
+      } else {
+        // Add same lines to both sides
+        lines.forEach(content => {
+          leftLines.push({
+            content,
+            lineNumber: leftLineNumber++,
+            type: 'unchanged'
+          });
+          rightLines.push({
+            content,
+            lineNumber: rightLineNumber++,
+            type: 'unchanged'
+          });
+        });
+      }
+    });
+
+    return { leftLines, rightLines };
+  }, [diffResult]);
+
+  return (
+    <div className="relative">
+      <div className="absolute top-2 right-2 text-xs text-foreground/50 px-2 py-1 bg-background/50 rounded z-10">
+        {Math.max(processedLines.leftLines.length, processedLines.rightLines.length)} lines • {fontSize}px
+      </div>
+
+      <div className="grid grid-cols-2 gap-0 max-h-[600px] border border-border rounded-lg overflow-hidden">
+        {/* Left Panel - Original */}
+        <div className="border-r border-border">
+          <div className="bg-muted/20 px-4 py-2 border-b border-border">
+            <h4 className="text-sm font-medium text-foreground">Original</h4>
+          </div>
+          <div
+            ref={leftPanelRef}
+            className="overflow-auto font-mono whitespace-pre-wrap bg-card"
+            style={{ fontSize: `${fontSize}px`, lineHeight: 1.5, maxHeight: '550px' }}
+            onScroll={handleScroll('left')}
+          >
+            {processedLines.leftLines.map((line, index) => (
+              <div
+                key={index}
+                className={`flex ${
+                  line.type === 'removed'
+                    ? 'diff-removed'
+                    : line.type === 'modified'
+                    ? 'diff-modified'
+                    : ''
+                }`}
+              >
+                {showLineNumbers && (
+                  <div className="flex-shrink-0 w-12 px-2 text-right text-foreground/50 bg-muted/10 border-r border-border select-none">
+                    {line.lineNumber || ''}
+                  </div>
+                )}
+                <div className="flex-1 px-4 py-1 min-h-[1.5em]">
+                  {line.content}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Panel - Modified */}
+        <div>
+          <div className="bg-muted/20 px-4 py-2 border-b border-border">
+            <h4 className="text-sm font-medium text-foreground">Modified</h4>
+          </div>
+          <div
+            ref={rightPanelRef}
+            className="overflow-auto font-mono whitespace-pre-wrap bg-card"
+            style={{ fontSize: `${fontSize}px`, lineHeight: 1.5, maxHeight: '550px' }}
+            onScroll={handleScroll('right')}
+          >
+            {processedLines.rightLines.map((line, index) => (
+              <div
+                key={index}
+                className={`flex ${
+                  line.type === 'added'
+                    ? 'diff-added'
+                    : line.type === 'modified'
+                    ? 'diff-modified'
+                    : ''
+                }`}
+              >
+                {showLineNumbers && (
+                  <div className="flex-shrink-0 w-12 px-2 text-right text-foreground/50 bg-muted/10 border-r border-border select-none">
+                    {line.lineNumber || ''}
+                  </div>
+                )}
+                <div className="flex-1 px-4 py-1 min-h-[1.5em]">
+                  {line.content}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

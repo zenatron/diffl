@@ -13,7 +13,7 @@ export default function Home() {
   const [diffResult, setDiffResult] = useState<DiffResult | null>(null);
   const [leftStats, setLeftStats] = useState<FileStatsType | null>(null);
   const [rightStats, setRightStats] = useState<FileStatsType | null>(null);
-  const [viewMode, setViewMode] = useState<'git' | 'list'>('git');
+  const [viewMode, setViewMode] = useState<'git' | 'list' | 'side-by-side'>('git');
   const [isComparing, setIsComparing] = useState(false);
   // Swap content between left and right
   const swapContent = () => {
