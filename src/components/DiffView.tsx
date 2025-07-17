@@ -702,48 +702,157 @@ function SideBySideDiff({ diffResult, showLineNumbers, fontSize, showInlineDiffs
     let leftLineNumber = 1;
     let rightLineNumber = 1;
 
-    diffResult.lines.forEach(line => {
-      const lines = line.value.split('\n').filter((l, i, arr) => i < arr.length - 1 || l.length > 0);
+    if (showInlineDiffs) {
+      // Process lines in order, looking for adjacent removed/added pairs for inline diffs
+      const diffLines = diffResult.lines;
+      let i = 0;
 
-      if (line.added) {
-        // Add empty lines to left, actual lines to right
-        lines.forEach(content => {
-          leftLines.push({ content: '', type: 'unchanged' });
-          rightLines.push({
-            content,
-            lineNumber: rightLineNumber++,
-            type: 'added'
-          });
-        });
-      } else if (line.removed) {
-        // Add actual lines to left, empty lines to right
-        lines.forEach(content => {
-          leftLines.push({
-            content,
-            lineNumber: leftLineNumber++,
-            type: 'removed'
-          });
-          rightLines.push({ content: '', type: 'unchanged' });
-        });
-      } else {
-        // Add same lines to both sides
-        lines.forEach(content => {
-          leftLines.push({
-            content,
-            lineNumber: leftLineNumber++,
-            type: 'unchanged'
-          });
-          rightLines.push({
-            content,
-            lineNumber: rightLineNumber++,
-            type: 'unchanged'
-          });
-        });
+      while (i < diffLines.length) {
+        const currentLine = diffLines[i];
+
+        if (currentLine.removed && i + 1 < diffLines.length && diffLines[i + 1].added) {
+          // Found adjacent removed and added lines - potential modification
+          const removedContent = currentLine.value.split('\n').filter((l, idx, arr) => idx < arr.length - 1 || l.length > 0);
+          const addedContent = diffLines[i + 1].value.split('\n').filter((l, idx, arr) => idx < arr.length - 1 || l.length > 0);
+          const maxLines = Math.max(removedContent.length, addedContent.length);
+
+          for (let j = 0; j < maxLines; j++) {
+            const removedLine = removedContent[j] || '';
+            const addedLine = addedContent[j] || '';
+
+            if (removedLine && addedLine) {
+              // Calculate similarity using Levenshtein distance
+              const maxLength = Math.max(removedLine.length, addedLine.length);
+              if (maxLength > 0) {
+                const distance = levenshteinDistance(removedLine, addedLine);
+                const similarity = (maxLength - distance) / maxLength;
+
+                if (similarity >= 0.3) { // Similar enough for inline diff
+                  leftLines.push({
+                    content: removedLine,
+                    lineNumber: leftLineNumber++,
+                    type: 'modified',
+                    oldContent: removedLine
+                  });
+                  rightLines.push({
+                    content: addedLine,
+                    lineNumber: rightLineNumber++,
+                    type: 'modified',
+                    newContent: addedLine
+                  });
+                  continue;
+                }
+              }
+            }
+
+            // Not similar enough, treat as separate removed/added lines
+            if (removedLine) {
+              leftLines.push({
+                content: removedLine,
+                lineNumber: leftLineNumber++,
+                type: 'removed'
+              });
+              rightLines.push({ content: '', type: 'unchanged' });
+            }
+            if (addedLine) {
+              leftLines.push({ content: '', type: 'unchanged' });
+              rightLines.push({
+                content: addedLine,
+                lineNumber: rightLineNumber++,
+                type: 'added'
+              });
+            }
+          }
+
+          i += 2; // Skip both removed and added lines
+        } else {
+          // Process single line normally
+          const lines = currentLine.value.split('\n').filter((l, idx, arr) => idx < arr.length - 1 || l.length > 0);
+
+          if (currentLine.added) {
+            // Add empty lines to left, actual lines to right
+            lines.forEach(content => {
+              leftLines.push({ content: '', type: 'unchanged' });
+              rightLines.push({
+                content,
+                lineNumber: rightLineNumber++,
+                type: 'added'
+              });
+            });
+          } else if (currentLine.removed) {
+            // Add actual lines to left, empty lines to right
+            lines.forEach(content => {
+              leftLines.push({
+                content,
+                lineNumber: leftLineNumber++,
+                type: 'removed'
+              });
+              rightLines.push({ content: '', type: 'unchanged' });
+            });
+          } else {
+            // Add same lines to both sides
+            lines.forEach(content => {
+              leftLines.push({
+                content,
+                lineNumber: leftLineNumber++,
+                type: 'unchanged'
+              });
+              rightLines.push({
+                content,
+                lineNumber: rightLineNumber++,
+                type: 'unchanged'
+              });
+            });
+          }
+
+          i++;
+        }
       }
-    });
+    } else {
+      // Original logic when inline diffs are disabled
+      diffResult.lines.forEach(line => {
+        const lines = line.value.split('\n').filter((l, i, arr) => i < arr.length - 1 || l.length > 0);
+
+        if (line.added) {
+          // Add empty lines to left, actual lines to right
+          lines.forEach(content => {
+            leftLines.push({ content: '', type: 'unchanged' });
+            rightLines.push({
+              content,
+              lineNumber: rightLineNumber++,
+              type: 'added'
+            });
+          });
+        } else if (line.removed) {
+          // Add actual lines to left, empty lines to right
+          lines.forEach(content => {
+            leftLines.push({
+              content,
+              lineNumber: leftLineNumber++,
+              type: 'removed'
+            });
+            rightLines.push({ content: '', type: 'unchanged' });
+          });
+        } else {
+          // Add same lines to both sides
+          lines.forEach(content => {
+            leftLines.push({
+              content,
+              lineNumber: leftLineNumber++,
+              type: 'unchanged'
+            });
+            rightLines.push({
+              content,
+              lineNumber: rightLineNumber++,
+              type: 'unchanged'
+            });
+          });
+        }
+      });
+    }
 
     return { leftLines, rightLines };
-  }, [diffResult]);
+  }, [diffResult, showInlineDiffs]);
 
   return (
     <div className="relative">
@@ -780,7 +889,11 @@ function SideBySideDiff({ diffResult, showLineNumbers, fontSize, showInlineDiffs
                   </div>
                 )}
                 <div className="flex-1 px-4 py-1 min-h-[1.5em]">
-                  {line.content}
+                  {line.type === 'modified' && line.oldContent && showInlineDiffs ? (
+                    <span className="inline-diff-removed">{line.content}</span>
+                  ) : (
+                    line.content
+                  )}
                 </div>
               </div>
             ))}
@@ -815,7 +928,14 @@ function SideBySideDiff({ diffResult, showLineNumbers, fontSize, showInlineDiffs
                   </div>
                 )}
                 <div className="flex-1 px-4 py-1 min-h-[1.5em]">
-                  {line.content}
+                  {line.type === 'modified' && line.newContent && showInlineDiffs ? (
+                    createInlineDiff(
+                      processedLines.leftLines[index]?.oldContent || '',
+                      line.newContent
+                    )
+                  ) : (
+                    line.content
+                  )}
                 </div>
               </div>
             ))}

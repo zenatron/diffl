@@ -50,7 +50,9 @@ export default function FileInput({ id, label, onContentChange }: FileInputProps
     const isValidMimeType = Object.keys(SUPPORTED_TYPES).includes(file.type);
 
     // Check file extension as fallback
-    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+    const fileExtension = file.name.includes('.')
+      ? '.' + file.name.split('.').pop()?.toLowerCase()
+      : '';
     const isValidExtension = SUPPORTED_EXTENSIONS.includes(fileExtension);
 
     if (!isValidMimeType && !isValidExtension) {

@@ -779,6 +779,23 @@ button, a, input, textarea {
   background: linear-gradient(180deg, var(--error) 0%, var(--error-light) 100%);
 }
 
+.diff-modified {
+  background: linear-gradient(90deg, var(--warning-subtle) 0%, transparent 100%);
+  color: var(--warning-light);
+  border-left: 4px solid var(--warning);
+  position: relative;
+}
+
+.diff-modified::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--warning) 0%, var(--warning-light) 100%);
+}
+
 /* Inline diff highlighting */
 .inline-diff-added {
   background-color: var(--success-subtle);

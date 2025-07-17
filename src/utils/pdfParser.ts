@@ -44,7 +44,7 @@ function assessExtractionQuality(text: string, pageCount: number): 'excellent' |
   const avgWordsPerPage = wordCount / pageCount;
 
   // Check for common extraction issues
-  const hasGarbledText = /[^\w\s\p{P}]/u.test(text);
+  const hasGarbledText = /[^\p{L}\p{N}\s\p{P}]/u.test(text);
   const hasRepeatedChars = /(.)\1{10,}/.test(text);
   const hasProperSentences = /[.!?]\s+[A-Z]/.test(text);
 

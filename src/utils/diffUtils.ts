@@ -117,12 +117,21 @@ export function calculateFileStats(text: string): FileStats {
 /**
  * Calculate similarity between two texts (0-100%)
  */
-function calculateSimilarity(oldText: string, newText: string): number {
-  const maxLength = Math.max(oldText.length, newText.length);
+function calculateSimilarity(oldText: string, newText: string, ignoreWhitespace: boolean = false): number {
+  let text1 = oldText;
+  let text2 = newText;
+
+  // If ignoreWhitespace is true, normalize whitespace for comparison
+  if (ignoreWhitespace) {
+    text1 = oldText.replace(/\s+/g, ' ').trim();
+    text2 = newText.replace(/\s+/g, ' ').trim();
+  }
+
+  const maxLength = Math.max(text1.length, text2.length);
   if (maxLength === 0) return 100;
 
   // Use Levenshtein distance for similarity calculation
-  const distance = levenshteinDistance(oldText, newText);
+  const distance = levenshteinDistance(text1, text2);
   return Math.round(((maxLength - distance) / maxLength) * 100);
 }
 
@@ -166,9 +175,11 @@ function determineChangeType(similarity: number, changesRatio: number): 'minor' 
 export function compareFiles(oldText: string, newText: string, options: {
   ignoreWhitespace: boolean;
 }): DiffResult {
-  // Use standard diff functions (ignoreWhitespace option removed for now)
+  // Use diff functions with ignoreWhitespace option
   const charDiff = Diff.diffChars(oldText, newText);
-  const lineDiff = Diff.diffLines(oldText, newText);
+  const lineDiff = Diff.diffLines(oldText, newText, {
+    ignoreWhitespace: options.ignoreWhitespace
+  });
 
   // Count various metrics
   let linesChanged = 0;
@@ -201,7 +212,7 @@ export function compareFiles(oldText: string, newText: string, options: {
   });
 
   // Calculate similarity and change metrics using original text
-  const similarity = calculateSimilarity(oldText, newText);
+  const similarity = calculateSimilarity(oldText, newText, options.ignoreWhitespace);
   const totalLength = Math.max(oldText.length, newText.length);
   const changesRatio = totalLength > 0 ? charsChanged / totalLength : 0;
   const changeType = determineChangeType(similarity, changesRatio);
