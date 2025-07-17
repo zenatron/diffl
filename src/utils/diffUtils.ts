@@ -158,26 +158,17 @@ function determineChangeType(similarity: number, changesRatio: number): 'minor' 
   return 'major';
 }
 
+
+
 /**
  * Compare two text files and return comprehensive differences
  */
 export function compareFiles(oldText: string, newText: string, options: {
   ignoreWhitespace: boolean;
 }): DiffResult {
-  // Preprocess text if ignoring whitespace
-  let processedOldText = oldText;
-  let processedNewText = newText;
-
-  if (options.ignoreWhitespace) {
-    processedOldText = oldText.replace(/\s+/g, ' ').trim();
-    processedNewText = newText.replace(/\s+/g, ' ').trim();
-  }
-
-  // Get character-level diff for detailed analysis
-  const charDiff = Diff.diffChars(processedOldText, processedNewText);
-
-  // Get line-level diff for better visualization
-  const lineDiff = Diff.diffLines(processedOldText, processedNewText);
+  // Use standard diff functions (ignoreWhitespace option removed for now)
+  const charDiff = Diff.diffChars(oldText, newText);
+  const lineDiff = Diff.diffLines(oldText, newText);
 
   // Count various metrics
   let linesChanged = 0;
@@ -209,9 +200,9 @@ export function compareFiles(oldText: string, newText: string, options: {
     }
   });
 
-  // Calculate similarity and change metrics
-  const similarity = calculateSimilarity(processedOldText, processedNewText);
-  const totalLength = Math.max(processedOldText.length, processedNewText.length);
+  // Calculate similarity and change metrics using original text
+  const similarity = calculateSimilarity(oldText, newText);
+  const totalLength = Math.max(oldText.length, newText.length);
   const changesRatio = totalLength > 0 ? charsChanged / totalLength : 0;
   const changeType = determineChangeType(similarity, changesRatio);
 

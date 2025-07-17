@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import FileInput from '@/components/FileInput';
 import DiffView from '@/components/DiffView';
 import FileStats from '@/components/FileStats';
-import HelpModal from '@/components/HelpModal';
 import { compareFiles, calculateFileStats, DiffResult, FileStats as FileStatsType } from '@/utils/diffUtils';
 import { ArrowRightIcon, RefreshCwIcon } from 'lucide-react';
 
@@ -15,9 +14,7 @@ export default function Home() {
   const [leftStats, setLeftStats] = useState<FileStatsType | null>(null);
   const [rightStats, setRightStats] = useState<FileStatsType | null>(null);
   const [viewMode, setViewMode] = useState<'git' | 'list'>('git');
-  const [ignoreWhitespace, setIgnoreWhitespace] = useState(false);
   const [isComparing, setIsComparing] = useState(false);
-  const [showHelpModal, setShowHelpModal] = useState(false);
   // Swap content between left and right
   const swapContent = () => {
     const tempContent = leftContent;
@@ -43,7 +40,7 @@ export default function Home() {
       setIsComparing(true);
       // Add a small delay to show loading state
       const timer = setTimeout(() => {
-        const result = compareFiles(leftContent, rightContent, { ignoreWhitespace });
+        const result = compareFiles(leftContent, rightContent, { ignoreWhitespace: false });
         setDiffResult(result);
         setIsComparing(false);
       }, 100);
@@ -52,7 +49,7 @@ export default function Home() {
       setDiffResult(null);
       setIsComparing(false);
     }
-  }, [leftContent, rightContent, ignoreWhitespace]);
+  }, [leftContent, rightContent]);
 
   // Update stats when content changes
   useEffect(() => {
@@ -177,19 +174,10 @@ export default function Home() {
           <DiffView
             diffResult={diffResult}
             viewMode={viewMode}
-            ignoreWhitespace={ignoreWhitespace}
             onViewModeChange={setViewMode}
-            onIgnoreWhitespaceChange={setIgnoreWhitespace}
-            onShowHelp={() => setShowHelpModal(true)}
           />
         </div>
       </main>
-
-      {/* Help Modal */}
-      <HelpModal
-        isOpen={showHelpModal}
-        onClose={() => setShowHelpModal(false)}
-      />
     </div>
   );
 }

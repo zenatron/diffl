@@ -114,6 +114,17 @@
   /* Dark mode specific gradients */
   --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
 
+  /* Modern gradient definitions for dark mode */
+  --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  --gradient-primary-hover: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%);
+  --gradient-primary-active: linear-gradient(135deg, var(--primary-active) 0%, var(--primary-dark) 100%);
+  --gradient-success: linear-gradient(135deg, var(--success) 0%, var(--success-light) 100%);
+  --gradient-error: linear-gradient(135deg, var(--error) 0%, var(--error-light) 100%);
+  --gradient-warning: linear-gradient(135deg, var(--warning) 0%, var(--warning-light) 100%);
+  --gradient-info: linear-gradient(135deg, var(--info) 0%, var(--info-light) 100%);
+  --gradient-surface: linear-gradient(135deg, var(--surface) 0%, var(--card-background) 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+
   /* Dark mode shadow system */
   --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
@@ -122,23 +133,21 @@
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
   --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
   --shadow-glow: 0 0 0 1px rgba(139, 92, 246, 0.1), 0 1px 3px 0 rgba(139, 92, 246, 0.2), 0 4px 6px 0 rgba(139, 92, 246, 0.1);
-  
-  /* Modern gradient definitions */
+}
+
+/* Light mode specific overrides */
+:root:not(.dark) {
+  /* Light mode gradients */
   --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
   --gradient-primary-hover: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%);
+  --gradient-primary-active: linear-gradient(135deg, var(--primary-active) 0%, var(--primary-dark) 100%);
   --gradient-success: linear-gradient(135deg, var(--success) 0%, var(--success-light) 100%);
   --gradient-error: linear-gradient(135deg, var(--error) 0%, var(--error-light) 100%);
-  --gradient-surface: linear-gradient(135deg, var(--surface) 0%, var(--card-background) 100%);
-  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  --gradient-warning: linear-gradient(135deg, var(--warning) 0%, var(--warning-light) 100%);
+  --gradient-info: linear-gradient(135deg, var(--info) 0%, var(--info-light) 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.6) 100%);
 
-  /* Enhanced spacing and border radius */
-  --radius: 0.75rem;
-  --radius-sm: 0.5rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
-  --radius-full: 9999px;
-
-  /* Modern shadow system */
+  /* Light mode shadow system */
   --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -146,6 +155,15 @@
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   --shadow-glow: 0 0 0 1px rgba(124, 58, 237, 0.05), 0 1px 3px 0 rgba(124, 58, 237, 0.1), 0 4px 6px 0 rgba(124, 58, 237, 0.05);
+}
+
+/* Global spacing and border radius */
+:root {
+  --radius: 0.75rem;
+  --radius-sm: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
 }
 
 /* Font configuration */
@@ -241,15 +259,7 @@ button, a, input, textarea {
   left: 100%;
 }
 
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-.btn:disabled::before {
-  display: none;
-}
+/* Disabled state handled in comprehensive section below */
 
 /* Primary Button - Modern gradient with glow */
 .btn-primary {
@@ -257,22 +267,27 @@ button, a, input, textarea {
   color: white;
   box-shadow: var(--shadow-md), 0 0 0 1px rgba(124, 58, 237, 0.1);
   position: relative;
+  border: 2px solid transparent;
 }
 
 .btn-primary:hover {
   background: var(--gradient-primary-hover);
   transform: translateY(-2px) scale(1.02);
   box-shadow: var(--shadow-lg), var(--shadow-glow);
+  border-color: var(--primary-light);
 }
 
 .btn-primary:focus-visible {
   outline: none;
   box-shadow: var(--shadow-md), 0 0 0 3px var(--primary-subtle);
+  border-color: var(--primary-light);
 }
 
 .btn-primary:active {
-  transform: translateY(-1px) scale(1.01);
+  background: var(--gradient-primary-active);
+  transform: translateY(0) scale(1);
   box-shadow: var(--shadow-sm);
+  border-color: var(--primary-dark);
 }
 
 /* Secondary Button - Modern glass effect with better contrast */
@@ -299,7 +314,10 @@ button, a, input, textarea {
 }
 
 .btn-secondary:active {
-  transform: translateY(-1px) scale(1.01);
+  background: var(--primary-subtle);
+  border-color: var(--primary-dark);
+  color: var(--primary-dark);
+  transform: translateY(0) scale(1);
   box-shadow: var(--shadow-xs);
 }
 
@@ -325,17 +343,40 @@ button, a, input, textarea {
   box-shadow: 0 0 0 3px var(--primary-subtle);
 }
 
+.btn-ghost:active {
+  background: var(--primary-subtle);
+  color: var(--primary-dark);
+  border-color: var(--primary-dark);
+  transform: translateY(0);
+  box-shadow: none;
+}
+
 /* Success Button */
 .btn-success {
   background: var(--gradient-success);
   color: white;
   box-shadow: var(--shadow-md);
+  border: 2px solid transparent;
 }
 
 .btn-success:hover {
   background: linear-gradient(135deg, var(--success-hover) 0%, var(--success) 100%);
   transform: translateY(-2px) scale(1.02);
   box-shadow: var(--shadow-lg), 0 0 20px var(--success-subtle);
+  border-color: var(--success-light);
+}
+
+.btn-success:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-md), 0 0 0 3px var(--success-subtle);
+  border-color: var(--success-light);
+}
+
+.btn-success:active {
+  background: linear-gradient(135deg, var(--success-dark) 0%, var(--success) 100%);
+  transform: translateY(0) scale(1);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--success-dark);
 }
 
 /* Error Button */
@@ -343,12 +384,27 @@ button, a, input, textarea {
   background: var(--gradient-error);
   color: white;
   box-shadow: var(--shadow-md);
+  border: 2px solid transparent;
 }
 
 .btn-error:hover {
   background: linear-gradient(135deg, var(--error-hover) 0%, var(--error) 100%);
   transform: translateY(-2px) scale(1.02);
   box-shadow: var(--shadow-lg), 0 0 20px var(--error-subtle);
+  border-color: var(--error-light);
+}
+
+.btn-error:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-md), 0 0 0 3px var(--error-subtle);
+  border-color: var(--error-light);
+}
+
+.btn-error:active {
+  background: linear-gradient(135deg, var(--error-dark) 0%, var(--error) 100%);
+  transform: translateY(0) scale(1);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--error-dark);
 }
 
 /* Button Sizes */
@@ -380,6 +436,62 @@ button, a, input, textarea {
   padding: 1rem;
 }
 
+/* Warning Button */
+.btn-warning {
+  background: var(--gradient-warning);
+  color: white;
+  box-shadow: var(--shadow-md);
+  border: 2px solid transparent;
+}
+
+.btn-warning:hover {
+  background: linear-gradient(135deg, var(--warning-hover) 0%, var(--warning) 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--shadow-lg), 0 0 20px var(--warning-subtle);
+  border-color: var(--warning-light);
+}
+
+.btn-warning:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-md), 0 0 0 3px var(--warning-subtle);
+  border-color: var(--warning-light);
+}
+
+.btn-warning:active {
+  background: linear-gradient(135deg, var(--warning-dark) 0%, var(--warning) 100%);
+  transform: translateY(0) scale(1);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--warning-dark);
+}
+
+/* Info Button */
+.btn-info {
+  background: var(--gradient-info);
+  color: white;
+  box-shadow: var(--shadow-md);
+  border: 2px solid transparent;
+}
+
+.btn-info:hover {
+  background: linear-gradient(135deg, var(--info-hover) 0%, var(--info) 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--shadow-lg), 0 0 20px var(--info-subtle);
+  border-color: var(--info-light);
+}
+
+.btn-info:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-md), 0 0 0 3px var(--info-subtle);
+  border-color: var(--info-light);
+}
+
+.btn-info:active {
+  background: linear-gradient(135deg, var(--info-dark) 0%, var(--info) 100%);
+  transform: translateY(0) scale(1);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--info-dark);
+}
+
 /* Light Mode Button Contrast Improvements */
 :root:not(.dark) .btn-ghost {
   color: var(--muted-dark);
@@ -387,6 +499,12 @@ button, a, input, textarea {
 }
 
 :root:not(.dark) .btn-ghost:hover {
+  background: var(--primary-subtle);
+  color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+:root:not(.dark) .btn-ghost:active {
   background: var(--primary-subtle);
   color: var(--primary-dark);
   border-color: var(--primary-dark);
@@ -404,20 +522,64 @@ button, a, input, textarea {
   border-color: var(--primary-dark);
 }
 
-/* Ensure disabled buttons have proper contrast */
+:root:not(.dark) .btn-secondary:active {
+  background: var(--primary-subtle);
+  color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+/* Enhanced disabled button states with proper contrast */
 .btn:disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none !important;
+  box-shadow: none !important;
   color: var(--muted) !important;
   background: var(--muted-subtle) !important;
   border-color: var(--border-color) !important;
+  pointer-events: none;
 }
 
+.btn:disabled::before {
+  display: none;
+}
+
+/* Light mode disabled button improvements */
 :root:not(.dark) .btn:disabled {
   color: var(--muted-dark) !important;
   background: var(--surface) !important;
   border-color: var(--muted-light) !important;
+}
+
+/* Comprehensive button focus system for accessibility */
+.btn:focus-visible {
+  outline: none;
+  z-index: 10;
+}
+
+/* Ensure all button variants have consistent focus styles */
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-ghost:focus-visible,
+.btn-success:focus-visible,
+.btn-error:focus-visible,
+.btn-warning:focus-visible,
+.btn-info:focus-visible {
+  outline: none;
+  z-index: 10;
+}
+
+/* Magnetic effect for enhanced interactivity */
+.magnetic {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.magnetic:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.magnetic:active {
+  transform: translateY(0) scale(1);
 }
 
 /* Light mode glass effect improvements */
@@ -801,27 +963,7 @@ button, a, input, textarea {
   animation-name: modalSlideIn;
 }
 
-/* Modern button hover effects */
-.btn-modern {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.btn-modern::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.btn-modern:hover::before {
-  left: 100%;
-}
+/* Enhanced button group styling with better states */
 
 /* Backdrop blur support */
 .backdrop-blur-sm {
@@ -834,27 +976,38 @@ button, a, input, textarea {
   -webkit-backdrop-filter: blur(8px);
 }
 
-/* Modern button group styling */
 .btn-group-modern {
   background: var(--background);
   border: 2px solid var(--border-color);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-lg);
   padding: 0.375rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(8px);
 }
 
 .btn-group-modern button {
-  border-radius: 0.5rem;
+  border-radius: var(--radius);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   z-index: 1;
   border: 2px solid transparent;
+  background: transparent;
+  color: var(--muted-dark);
+}
+
+.btn-group-modern button:hover:not(.active):not(:disabled) {
+  background: var(--primary-subtle);
+  color: var(--primary-dark);
+  border-color: var(--primary);
+  transform: translateY(-1px);
 }
 
 .btn-group-modern button.active {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px) scale(1.05);
-  border-color: currentColor;
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px) scale(1.02);
+  border-color: var(--primary-light);
 }
 
 .btn-group-modern button:disabled {
@@ -862,6 +1015,9 @@ button, a, input, textarea {
   cursor: not-allowed;
   transform: none !important;
   box-shadow: none !important;
+  background: transparent !important;
+  color: var(--muted) !important;
+  border-color: transparent !important;
 }
 
 .btn-group-modern button:disabled:hover {
@@ -901,23 +1057,27 @@ button, a, input, textarea {
   background: var(--muted-dark);
 }
 
-/* Enhanced button contrast for light mode */
-:root:not(.dark) .btn-group-modern button:not(.active) {
-  background: var(--card-background);
-  color: var(--foreground);
+/* Light mode button group improvements */
+:root:not(.dark) .btn-group-modern {
+  background: rgba(255, 255, 255, 0.8);
   border-color: var(--border-color);
 }
 
-:root:not(.dark) .btn-group-modern button:not(.active):hover {
-  background: var(--muted-subtle);
-  border-color: var(--muted);
-  color: var(--foreground);
+:root:not(.dark) .btn-group-modern button:not(.active) {
+  color: var(--muted-dark);
+  background: transparent;
 }
 
-/* Ensure proper contrast for active states in light mode */
+:root:not(.dark) .btn-group-modern button:not(.active):hover {
+  background: var(--primary-subtle);
+  color: var(--primary-dark);
+  border-color: var(--primary);
+}
+
 :root:not(.dark) .btn-group-modern button.active {
-  color: white !important;
-  border-color: currentColor;
+  background: var(--gradient-primary);
+  color: white;
+  border-color: var(--primary-light);
 }
 
 /* Ring effects for better focus indication */

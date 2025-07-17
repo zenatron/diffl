@@ -8,9 +8,7 @@ import {
   DiffIcon,
   CopyIcon,
   CheckIcon,
-  HelpCircleIcon,
   ZapIcon,
-  EyeIcon,
   HashIcon
 } from 'lucide-react';
 import * as Diff from 'diff';
@@ -19,12 +17,9 @@ interface DiffViewProps {
   diffResult: DiffResult | null;
   viewMode: 'git' | 'list';
   onViewModeChange: (mode: 'git' | 'list') => void;
-  ignoreWhitespace: boolean;
-  onIgnoreWhitespaceChange: (ignoreWhitespace: boolean) => void;
-  onShowHelp: () => void;
 }
 
-export default function DiffView({ diffResult, viewMode, ignoreWhitespace, onViewModeChange, onIgnoreWhitespaceChange, onShowHelp }: DiffViewProps) {
+export default function DiffView({ diffResult, viewMode, onViewModeChange }: DiffViewProps) {
   const [copied, setCopied] = useState(false);
   const [showLineNumbers, setShowLineNumbers] = useState(true);
   const [fontSize, setFontSize] = useState(14);
@@ -161,19 +156,7 @@ export default function DiffView({ diffResult, viewMode, ignoreWhitespace, onVie
               <ZapIcon size={16} />
               <span>Inline</span>
             </button>
-            <button
-              type="button"
-              onClick={() => onIgnoreWhitespaceChange(!ignoreWhitespace)}
-              className={`btn btn-sm magnetic ${
-                ignoreWhitespace
-                  ? 'btn-info'
-                  : 'btn-ghost'
-              }`}
-              title="Ignore whitespace differences"
-            >
-              <EyeIcon size={16} />
-              <span>No WS</span>
-            </button>
+
           </div>
 
           {/* Modern Font Size Controls */}
@@ -203,14 +186,6 @@ export default function DiffView({ diffResult, viewMode, ignoreWhitespace, onVie
 
           {/* Action Buttons */}
           <div className="flex items-center gap-3">
-            <button
-              onClick={onShowHelp}
-              className="glass-modern magnetic flex items-center justify-center w-14 h-14 border-2 border-primary/20 text-foreground hover:border-primary hover:bg-primary hover:text-white rounded-2xl transition-all duration-300 hover:shadow-lg hover:shadow-primary/20"
-              title="Help & Instructions"
-            >
-              <HelpCircleIcon size={22} />
-            </button>
-
             <button
               onClick={() => copyToClipboard(getDiffContent())}
               className={`btn magnetic ${
