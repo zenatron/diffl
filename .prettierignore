@@ -4,9 +4,6 @@ node_modules
 # Next.js build output
 .next
 
-# Blog and project content
-/public
-
 # Lock files
 pnpm-lock.yaml
 
